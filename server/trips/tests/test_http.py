@@ -86,3 +86,11 @@ class HttpTripTest(APITestCase):
         exp_trip_ids = [str(trip.id) for trip in trips]
         act_trip_ids = [trip.get('id') for trip in response.data]
         self.assertCountEqual(exp_trip_ids, act_trip_ids)
+
+    def test_user_can_retrieve_trip_by_id(self):
+        trip = Trip.objects.create(pick_up_address='A', drop_off_address='B')
+        response = self.client.get(trip.get_absolute_url(),
+                                   HTTP_AUTHORIZATION=f'Bearer {self.access}'
+                                   )
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(str(trip.id), response.data.get('id'))
