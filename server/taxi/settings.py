@@ -90,6 +90,8 @@ DATABASES = {
         'PORT': os.getenv('PGPORT', '5432'),
     }
 }
+# print("_________________ The DATABASES _________________ \n", DATABASES)
+# print("\n \n")
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
