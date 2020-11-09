@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from django.contrib.auth.models import Group
 
 from taxi.routing import application
-
+from trips.models import Trip
 
 TEST_CHANNEL_LAYERS = {
     'default': {
@@ -17,11 +17,16 @@ TEST_CHANNEL_LAYERS = {
 
 
 @database_sync_to_async
-def create_user(  # changed
-    username,
-    password,
-    group='rider'
-):
+def create_user(username, password, group='rider'):
+    """[summary]
+        • We need to refactor our other WebSocket tests to pass a 
+            JWT access token in the query string when connecting
+        • The moment a driver logs into our app, they join a pool 
+            of drivers that can accept requests from riders. 
+            We'll test this by creating a driver and logging them in, 
+            sending a broadcast message to the driver group, and 
+            confirming that the driver receives the message.    
+    """
     # Create user.
     user = get_user_model().objects.create_user(
         username=username,
@@ -39,6 +44,23 @@ def create_user(  # changed
     return user, access
 
 
+@database_sync_to_async
+def create_trip(
+    pick_up_address='123 Main Street',
+    drop_off_address='456 Piney Road',
+    status='REQUESTED',
+    rider=None,
+    driver=None
+):
+    return Trip.objects.create(
+        pick_up_address=pick_up_address,
+        drop_off_address=drop_off_address,
+        status=status,
+        rider=rider,
+        driver=driver
+    )
+
+
 @pytest.mark.asyncio
 @pytest.mark.django_db(transaction=True)
 class TestWebSocket:
@@ -48,6 +70,7 @@ class TestWebSocket:
             'test.user@example.com', 'pAssw0rd'
         )
         communicator = WebsocketCommunicator(
+            # application is defined in the `routing.py` file
             application=application,
             path=f'/taxi/?token={access}'
         )
@@ -112,9 +135,12 @@ class TestWebSocket:
         assert connected is False
         await communicator.disconnect()
 
-    # The below test will broadcast the message to all the drivers
-    # will create a different test to prove that drivers receive the broadcasted message
     async def test_join_driver_pool(self, settings):
+        """[summary]
+        • The below test will broadcast the message to all the drivers
+            will create a different test to prove that drivers receive
+            the broadcasted message.
+        """
         settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
         _, access = await create_user(
             'test.user@example.com', 'pAssw0rd', 'driver'
@@ -135,6 +161,12 @@ class TestWebSocket:
         await communicator.disconnect()
 
     async def test_request_trip(self, settings):
+        """[summary]
+        • When a rider requests a trip, the server will create
+            a new Trip record and will broadcast the request to the driver pool. 
+            But from the rider's perspective, they will only get a message back 
+            confirming the creation of a new trip
+        """
         settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
         user, access = await create_user(
             'test.user@example.com', 'pAssw0rd', 'rider'
@@ -163,6 +195,15 @@ class TestWebSocket:
         await communicator.disconnect()
 
     async def test_driver_alerted_on_request(self, settings):
+        """[summary]
+        • We start off by creating a channel layer and adding it to the driver pool. 
+        • Every message that's broadcast to the drivers group will be captured on the 
+            test_channel. 
+        • Next, we establish a connection to the server as a rider, and we send
+            a new request message over the wire. 
+        • Finally, we wait for the broadcast message to reach the drivers group, 
+            and we confirm the identity of the rider who sent it.
+        """
         settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
         # Listen to the 'drivers' group test channel.
         channel_layer = get_channel_layer()
@@ -177,6 +218,7 @@ class TestWebSocket:
             application=application,
             path=f'/taxi/?token={access}'
         )
+        # establish a connection to the server as a rider
         connected, _ = await communicator.connect()
 
         # Request a trip.
@@ -190,11 +232,88 @@ class TestWebSocket:
         })
 
         # Receive JSON message from server on test channel.
+        # "test_channel" is defined above in this test
         response = await channel_layer.receive('test_channel')
         response_data = response.get('data')
 
+        # confirm the identity of the rider who sent it
         assert response_data['id'] is not None
         assert response_data['rider']['username'] == user.username
         assert response_data['driver'] is None
+
+        await communicator.disconnect()
+
+    async def test_create_trip_group(self, settings):
+        """[summary]
+        • When the rider sends a request, we create a Trip record and link them to it.
+        • We're missing the piece that associates the correct communication channel 
+            with that rider.
+        • We need to add two pieces of functionality:
+            1) Create a group for the new `Trip` record and add the rider to it.
+            2) Add the rider to all of the trip-related groups they they belong
+                to when the WebSocket connects and remove them from that group
+                when the WebSocket disconnects.
+        Args:
+            settings ([type]): [description]
+        """
+        settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
+        user, access = await create_user(
+            'test.user@example.com', 'pAssw0rd', 'rider'
+        )
+        communicator = WebsocketCommunicator(
+            application=application,
+            path=f'/taxi/?token={access}'
+        )
+        connected, _ = await communicator.connect()
+
+        # Send a ride request.
+        await communicator.send_json_to({
+            'type': 'create.trip',
+            'data': {
+                'pick_up_address': '123 Main Street',
+                'drop_off_address': '456 Piney Road',
+                'rider': user.id,
+            },
+        })
+        response = await communicator.receive_json_from()
+        response_data = response.get('data')
+
+        # Send a message to the trip group.
+        message = {
+            'type': 'echo.message',
+            'data': 'This is a test message.',
+        }
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(response_data['id'], message=message)
+
+        # Rider receives message.
+        response = await communicator.receive_json_from()
+        assert response == message
+
+        await communicator.disconnect()
+
+    async def test_join_trip_group_on_connect(self, settings):
+        settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
+        user, access = await create_user(
+            'test.user@example.com', 'pAssw0rd', 'rider'
+        )
+        trip = await create_trip(rider=user)
+        communicator = WebsocketCommunicator(
+            application=application,
+            path=f'/taxi/?token={access}'
+        )
+        connected, _ = await communicator.connect()
+
+        # Send a message to the trip group.
+        message = {
+            'type': 'echo.message',
+            'data': 'This is a test message.',
+        }
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(f'{trip.id}', message=message)
+
+        # Rider receives message.
+        response = await communicator.receive_json_from()
+        assert response == message
 
         await communicator.disconnect()

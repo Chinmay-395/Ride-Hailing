@@ -10,6 +10,14 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 User = get_user_model()
 
+"""[summary]
+plucks the JWT access token from the query string and retrieves the associated user.
+  Once the WebSocket connection is opened, all messages can be sent and received without
+  verifying the user again. Closing the connection and opening it again 
+  requires re-authorization.
+
+"""
+
 
 @database_sync_to_async
 def get_user(scope):
