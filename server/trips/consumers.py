@@ -66,6 +66,13 @@ class TaxiConsumer(AsyncJsonWebsocketConsumer):
             ).only('id').values_list('id', flat=True)
         return map(str, trip_ids)
 
+    @database_sync_to_async
+    def _update_trip(self, data):
+        instance = Trip.objects.get(id=data.get('id'))
+        serializer = TripSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        return serializer.update(instance, serializer.validated_data)
+
     async def connect(self):
         user = self.scope['user']
         # this will not let anonymous user and close their connection
@@ -141,10 +148,14 @@ class TaxiConsumer(AsyncJsonWebsocketConsumer):
 
     async def echo_message(self, message):
         """
-            When a channel layer sends a broadcast message with the type echo.message,
+        • It will send the message to all the people/clients subscribed 
+            to a specific channel.
+            In this case its both the rider and driver.
+        • When a channel layer sends a broadcast message with the type echo.message,
             Channels will execute the echo_message() function for everyone in 
             the test group.
         """
+        print("================================== I am calling from echo_message", message)
         await self.send_json(message)
 
     async def receive_json(self, content, **kwargs):
@@ -158,9 +169,36 @@ class TaxiConsumer(AsyncJsonWebsocketConsumer):
             2) The type maps directly to a consumer function when sent from another 
                 channel layer. 
         """
+        print("================================== I am calling from receive_json function")
         message_type = content.get('type')
         # 'create.trip' will be converted to "create_trip" which is a user-defined function
         if message_type == 'create.trip':
             await self.create_trip(content)
         elif message_type == 'echo.message':
             await self.echo_message(content)
+
+    async def update_trip(self, message):
+        data = message.get('data')
+        trip = await self._update_trip(data)
+        trip_id = f'{trip.id}'
+        trip_data = await self._get_trip_data(trip)
+
+        # Send update to rider.
+        await self.channel_layer.group_send(
+            group=trip_id,
+            message={
+                'type': 'echo.message',
+                'data': trip_data,
+            }
+        )
+
+        # Add driver to the trip group.
+        await self.channel_layer.group_add(
+            group=trip_id,
+            channel=self.channel_name
+        )
+
+        await self.send_json({
+            'type': 'echo.message',
+            'data': trip_data
+        })
