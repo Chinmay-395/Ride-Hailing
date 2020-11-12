@@ -6,7 +6,8 @@ from django.db.models import Q
 
 from .serializers import UserSerializer, LogInSerializer
 from .models import Trip
-from .serializers import LogInSerializer, TripSerializer, UserSerializer
+from .serializers import (LogInSerializer,  # TripSerializer,
+                          UserSerializer, NestedTripSerializer)
 
 
 class SignUpView(generics.CreateAPIView):
@@ -22,7 +23,7 @@ class TripView(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'id'
     lookup_url_kwarg = 'trip_id'
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = TripSerializer
+    serializer_class = NestedTripSerializer
 
     def get_queryset(self):
         """[summary]

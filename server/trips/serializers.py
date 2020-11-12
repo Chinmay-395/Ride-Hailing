@@ -34,12 +34,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = (
             'id', 'username', 'password1', 'password2',
-            'first_name', 'last_name', 'group',
+            'first_name', 'last_name', 'group', 'photo',
         )
         read_only_fields = ('id',)
 
 
-class LogInSerializer(TokenObtainPairSerializer):  # new
+class LogInSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)

@@ -8,6 +8,7 @@ from django.conf import settings
 
 
 class User(AbstractUser):
+    photo = models.ImageField(upload_to='photos', null=True, blank=True)
     @property
     def group(self):
         groups = self.groups.all()
