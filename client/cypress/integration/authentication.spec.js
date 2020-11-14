@@ -6,4 +6,16 @@ describe('Authentication', function () {
     cy.get('button').contains('Log in').click();
     cy.hash().should('eq', '#/');
   });
+
+  it('Can sign up.', function () {
+    cy.visit('/#/sign-up');
+    cy.get('input#username').type('gary.cole@example.com');
+    cy.get('input#firstName').type('Gary');
+    cy.get('input#lastName').type('Cole');
+    cy.get('input#password').type('pAssw0rd', { log: false });
+    cy.get('select#group').select('driver');
+    cy.get('input#photo').attachFile('images/photo.jpg');
+    cy.get('button').contains('Sign up').click();
+    cy.hash().should('eq', '#/log-in');
+  });
 });
