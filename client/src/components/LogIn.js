@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Breadcrumb, Card, Col, Button, Form, Row } from 'react-bootstrap';
 import { Formik } from 'formik';
 import { Link, Redirect } from 'react-router-dom';
 
 function LogIn(props) {
-  const [isSubmitted, setSubmitted] = useState(false);
 
-  const onSubmit = (values, actions) => {
-    console.log(values);
-    setSubmitted(true);
-  }
+  const onSubmit = async (values, actions) => {
+    try {
+      await props.logIn(values.username, values.password);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  };
 
-  if (isSubmitted) {
-    return <Redirect to='/' />;
-  }
 
   return (
     <Row>
