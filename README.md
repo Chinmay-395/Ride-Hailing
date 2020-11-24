@@ -1,4 +1,5 @@
-export PGDATABASE=taxi
-export PGUSER=taxi
+export PGDATABASE=taxi \
+export PGUSER=taxi \
 export PGPASSWORD=taxi
+
 # Ride-Hailing
