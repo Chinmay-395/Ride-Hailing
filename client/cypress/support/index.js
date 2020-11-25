@@ -19,5 +19,18 @@ const addUser = (email, firstName, lastName, userType) => {
   cy.hash().should('eq', '#/log-in');
 }
 
-// new
+const logIn = (email) => {
+  cy.server();
+  cy.route('POST', '**/api/log_in/**').as('logIn');
+
+  // Log into the app.
+  cy.visit('/#/log-in');
+  cy.get('input#username').type(email);
+  cy.get('input#password').type('pAssw0rd', { log: false });
+  cy.get('button').contains('Log in').click();
+  cy.wait('@logIn');
+}
+
+
 Cypress.Commands.add('addUser', addUser);
+Cypress.Commands.add('logIn', logIn);
