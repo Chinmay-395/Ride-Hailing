@@ -16,7 +16,7 @@ function App() {
   });
   // new
   const logIn = async (username, password) => { // changed
-    const url = '/api/log_in/';
+    const url = `${process.env.REACT_APP_BASE_URL}/api/log_in/`;
     try {
       const response = await axios.post(url, { username, password });
       window.localStorage.setItem(

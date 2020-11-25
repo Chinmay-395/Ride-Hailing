@@ -52,7 +52,7 @@ services:
       - ./client:/usr/src/app
     environment:  # new
       - CHOKIDAR_USEPOLLING=true
-
+      - REACT_APP_BASE_URL=http://localhost:8003
 
 #Typically, the code in your container only exists as long as the container is running.
 #When you stop the Docker container and start it again, everything is recreated from

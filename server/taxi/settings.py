@@ -41,12 +41,14 @@ INSTALLED_APPS = [
     # third-party configurations
     'django.contrib.postgres',
     'rest_framework',
+    'corsheaders',
     'channels',
     # custom apps
     'trips',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -164,3 +166,7 @@ CHANNEL_LAYERS = {
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3001",
+]

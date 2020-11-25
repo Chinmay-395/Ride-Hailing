@@ -1,8 +1,10 @@
 # server/requirements.txt
 
+
 channels==2.4.0
 channels-redis==3.0.1
 Django==3.1
+django-cors-headers==3.4.0
 djangorestframework==3.11.1
 djangorestframework-simplejwt==4.4.0
 Pillow==7.2.0
