@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, Redirect, Route, Switch } from 'react-router-dom';
-import { Button, Container, Form, Navbar } from 'react-bootstrap';
+import { Button, Container, Form, Nav, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import axios from 'axios';
 // custom components
+import { isDriver, isRider } from './services/AuthService';
 import SignUp from './components/SignUp';
 import LogIn from './components/LogIn';
 import Driver from './components/Driver.js';
@@ -74,6 +75,22 @@ function App() {
                   className='btn btn-primary'
                   to='/log-in'
                 >Log in</Link>
+              }
+              {
+                isRider() && (
+                  <Link
+                    className='btn btn-primary'
+                    to='/rider'
+                  >Dashboard</Link>
+                )
+              }
+              {
+                isDriver() && (
+                  <Link
+                    className='btn btn-primary'
+                    to='/driver'
+                  >Dashboard</Link>
+                )
               }
             </div>
           )} />
