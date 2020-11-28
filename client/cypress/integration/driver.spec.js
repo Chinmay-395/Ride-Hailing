@@ -166,50 +166,50 @@ describe('The driver dashboard', function () {
 
 
 
-  it('Can receive a ride request', function () {
-    cy.server();
-    cy.route({
-      method: 'GET',
-      url: '**/api/trip/',
-      status: 200,
-      response: []
-    }).as('getTrips');
+  // it('Can receive a ride request', function () {
+  //   cy.server();
+  //   cy.route({
+  //     method: 'GET',
+  //     url: '**/api/trip/',
+  //     status: 200,
+  //     response: []
+  //   }).as('getTrips');
 
-    cy.logIn(driverEmail);
+  //   cy.logIn(driverEmail);
 
-    cy.visit('/#/driver');
-    cy.wait('@getTrips');
+  //   cy.visit('/#/driver');
+  //   cy.wait('@getTrips');
 
-    // Requested trips.
-    cy.get('[data-cy=trip-card]')
-      .eq(1)
-      .contains('No trips.');
+  //   // Requested trips.
+  //   cy.get('[data-cy=trip-card]')
+  //     .eq(1)
+  //     .contains('No trips.');
 
-    // Make trip request as rider.
-    cy.request({
-      method: 'POST',
-      url: 'http://localhost:8003/api/log_in/',
-      body: {
-        "username": riderEmail,
-        "password": "pAssw0rd"
-      }
-    }).then((response) => {
-      const token = response.body.access;
-      const ws = webSocket(`ws://localhost:8003/taxi/?token=${token}`);
-      ws.subscribe();
-      ws.next({
-        type: 'create.trip',
-        data: {
-          pick_up_address: '123 Main Street',
-          drop_off_address: '456 Elm Street',
-          rider: 2
-        }
-      });
-    });
+  //   // Make trip request as rider.
+  //   cy.request({
+  //     method: 'POST',
+  //     url: 'http://localhost:8003/api/log_in/',
+  //     body: {
+  //       "username": riderEmail,
+  //       "password": "pAssw0rd"
+  //     }
+  //   }).then((response) => {
+  //     const token = response.body.access;
+  //     const ws = webSocket(`ws://localhost:8003/taxi/?token=${token}`);
+  //     ws.subscribe();
+  //     ws.next({
+  //       type: 'create.trip',
+  //       data: {
+  //         pick_up_address: '123 Main Street',
+  //         drop_off_address: '456 Elm Street',
+  //         rider: 2
+  //       }
+  //     });
+  //   });
 
-    // Requested trips.
-    cy.get('[data-cy=trip-card]')
-      .eq(1)
-      .contains('REQUESTED');
-  });
+  //   // Requested trips.
+  //   cy.get('[data-cy=trip-card]')
+  //     .eq(1)
+  //     .contains('REQUESTED');
+  // });
 })

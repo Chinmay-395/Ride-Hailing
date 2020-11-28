@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Breadcrumb, Card, Col, Row
+  Breadcrumb, Button, Card, Col, Row
 } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap';
+import { webSocket } from 'rxjs/webSocket';
 
+
+import { getAccessToken, getUser } from '../services/AuthService';
 import TripMedia from './TripMedia';
 import { getTrip } from '../services/TripService';
 /* ========================================================
@@ -44,6 +47,23 @@ function DriverDetail({ match }) {
     )
   }
 
+  const updateTripStatus = (status) => {
+    const driver = getUser();
+    const updatedTrip = { ...trip, driver, status };
+    const token = getAccessToken();
+    const ws = webSocket(`ws://localhost:8003/taxi/?token=${token}`);
+    ws.subscribe();
+    ws.next({
+      type: 'update.trip',
+      data: {
+        ...updatedTrip,
+        driver: updatedTrip.driver.id,
+        rider: updatedTrip.rider.id
+      }
+    });
+    setTrip(updatedTrip);
+  };
+
   return (
     <Row>
       <Col lg={12}>
@@ -56,6 +76,46 @@ function DriverDetail({ match }) {
         <Card className='mb-3' data-cy='trip-card'>
           <Card.Header>Trip</Card.Header>
           <Card.Body>{tripMedia}</Card.Body>
+          <Card.Footer>
+            {
+              trip !== null && trip.status === 'REQUESTED' && (
+                <Button
+                  data-cy='status-button'
+                  block
+                  variant='primary'
+                  onClick={() => updateTripStatus('STARTED')}
+                >Drive to pick up
+                </Button>
+              )
+            }
+            {
+              trip !== null && trip.status === 'STARTED' && (
+                <Button
+                  data-cy='status-button'
+                  block
+                  variant='primary'
+                  onClick={() => updateTripStatus('IN_PROGRESS')}
+                >Drive to drop off
+                </Button>
+              )
+            }
+            {
+              trip !== null && trip.status === 'IN_PROGRESS' && (
+                <Button
+                  data-cy='status-button'
+                  block
+                  variant='primary'
+                  onClick={() => updateTripStatus('COMPLETED')}
+                >Complete trip
+                </Button>
+              )
+            }
+            {
+              trip !== null && !['REQUESTED', 'STARTED', 'IN_PROGRESS'].includes(trip.status) && (
+                <span className='text-center'>Completed</span>
+              )
+            }
+          </Card.Footer>
         </Card>
       </Col>
     </Row>
