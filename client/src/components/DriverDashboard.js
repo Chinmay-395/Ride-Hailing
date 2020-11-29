@@ -3,14 +3,16 @@ import {
   Breadcrumb, Col, Row
 } from 'react-bootstrap';
 import { webSocket } from 'rxjs/webSocket';
+import { toast } from 'react-toastify';
+
 
 import { getAccessToken } from '../services/AuthService';
 import TripCard from './TripCard';
 import { getTrips } from '../services/TripService';
 
+
 function DriverDashboard(props) {
   const [trips, setTrips] = useState([]);
-
   useEffect(() => {
     const loadTrips = async () => {
       const { response, isError } = await getTrips();
@@ -31,11 +33,19 @@ function DriverDashboard(props) {
         ...prevTrips.filter(trip => trip.id !== message.data.id),
         message.data
       ]);
+      updateToast(message.data);
     });
     return () => {
       subscription.unsubscribe();
     }
   }, []);
+
+
+  const updateToast = (trip) => {
+    if (trip.driver === null) {
+      toast.info(`Rider ${trip.rider.username} has requested a trip.`);
+    }
+  };
 
   const getCurrentTrips = () => {
     return trips.filter(trip => {

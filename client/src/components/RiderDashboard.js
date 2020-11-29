@@ -3,10 +3,13 @@ import {
   Breadcrumb, Col, Row
 } from 'react-bootstrap';
 import { webSocket } from 'rxjs/webSocket';
+import { toast } from 'react-toastify';
+
 
 import TripCard from './TripCard';
 import { getTrips } from '../services/TripService';
 import { getAccessToken } from '../services/AuthService';
+
 
 function Rider(props) {
   const [trips, setTrips] = useState([]);
@@ -31,11 +34,22 @@ function Rider(props) {
         ...prevTrips.filter(trip => trip.id !== message.data.id),
         message.data
       ]);
+      updateToast(message.data);
     });
     return () => {
       subscription.unsubscribe();
     }
   }, []);
+
+  const updateToast = (trip) => {
+    if (trip.status === 'STARTED') {
+      toast.info(`Driver ${trip.driver.username} is coming to pick you up.`);
+    } else if (trip.status === 'IN_PROGRESS') {
+      toast.info(`Driver ${trip.driver.username} is headed to your destination.`);
+    } else if (trip.status === 'COMPLETED') {
+      toast.info(`Driver ${trip.driver.username} has dropped you off.`);
+    }
+  };
 
   const getCurrentTrips = () => {
     /* ===========================================================

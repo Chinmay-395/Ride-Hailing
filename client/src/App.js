@@ -3,6 +3,7 @@ import { Link, Redirect, Route, Switch } from 'react-router-dom';
 import { Button, Container, Form, Nav, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import axios from 'axios';
+import { ToastContainer } from 'react-toastify';
 // custom components
 import { isDriver, isRider } from './services/AuthService';
 import SignUp from './components/SignUp';
@@ -11,6 +12,7 @@ import Driver from './components/Driver.js';
 import Rider from './components/Rider.js';
 // custom css
 import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   // new
@@ -128,6 +130,7 @@ function App() {
           <Rider />
         )} />
       </Container>
+      <ToastContainer />
     </div>
   );
 }
