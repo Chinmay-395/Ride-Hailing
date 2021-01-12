@@ -8,7 +8,7 @@ from trips.consumers import TaxiConsumer
 application = ProtocolTypeRouter({
     'websocket': TokenAuthMiddlewareStack(
         URLRouter([
-            path('taxi/', TaxiConsumer),
+            path('taxi/', TaxiConsumer.as_asgi()),
         ]),
     ),
 })

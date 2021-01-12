@@ -88,10 +88,6 @@ class TestWebSocket:
             path=f'/taxi/?token={access}'
         )
         connected, _ = await communicator.connect()
-        print("WHAT IS CONNECTED???????????????????????????????", connected)
-        print("\n")
-        print("WHAT IS _", _)
-        print("\n")
         message = {
             # type attribute would be the function we need to call
             # This will call the "echo_message" function in the consumers.py file
@@ -332,7 +328,6 @@ class TestWebSocket:
         )
         trip = await create_trip(rider=rider)
         trip_id = f'{trip.id}'
-        print("============================= trip_id", trip_id)
 
         # Listen for messages as rider.
         channel_layer = get_channel_layer()

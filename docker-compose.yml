@@ -1,6 +1,6 @@
 # docker-compose.yml
 
-version: '3.7'
+version: '3.8'
 
 services:
 
@@ -13,14 +13,15 @@ services:
       - taxi-redis
       - taxi-database
     environment:
-      - PGDATABASE=taxi 
-      - PGUSER=taxi 
-      - PGPASSWORD=taxi 
-      - PGHOST=taxi-database 
+    environment:
+      - PGDATABASE=taxi
+      - PGUSER=taxi
+      - PGPASSWORD=taxi
+      - PGHOST=taxi-database
       - REDIS_URL=redis://taxi-redis:6379/0
     ports:
       - 8003:8000
-    volumes: # new
+    volumes: 
     - ./server:/usr/src/app
 
   taxi-redis:
@@ -29,7 +30,7 @@ services:
 
   taxi-database:
     container_name: taxi-database
-    image: postgres:12-alpine
+    image: postgres:13-alpine
     environment:
       - POSTGRES_USER=taxi
       - POSTGRES_PASSWORD=taxi
@@ -48,17 +49,11 @@ services:
     ports:
       - 3001:3000
     stdin_open: true
-    volumes:  # new
+    volumes:  
       - ./client:/usr/src/app
-    environment:  # new
+    environment:  
       - CHOKIDAR_USEPOLLING=true
       - REACT_APP_BASE_URL=http://localhost:8003
-      - REACT_APP_GOOGLE_MAPS_KEY=AIzaSyDII4KxdmCCmDhWvQdxe8tBExT6NvNw2cs
 
-#Typically, the code in your container only exists as long as the container is running.
-#When you stop the Docker container and start it again, everything is recreated from
-#scratch from the image. Volumes let you store data outside of the container lifecycle. 
 volumes:
-  #By adding the taxi-database volume, all of the data we write to 
-  #PostgreSQL will persist as the Docker container is started and stopped.
   taxi-database:
