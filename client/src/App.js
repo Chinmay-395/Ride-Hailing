@@ -1,26 +1,19 @@
 import React, { useState } from 'react';
-import { Link, Redirect, Route, Switch } from 'react-router-dom';
-import { Button, Container, Form, Nav, Navbar } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 import axios from 'axios';
-import { ToastContainer } from 'react-toastify';
-// custom components
-import { isDriver, isRider } from './services/AuthService';
-import SignUp from './components/SignUp';
-import LogIn from './components/LogIn';
-import Driver from './components/Driver.js';
-import Rider from './components/Rider.js';
-// custom css
+import { Button, Container, Form, Navbar } from 'react-bootstrap'; // new
+import { LinkContainer } from 'react-router-bootstrap'; // new
+import { Link, Redirect, Route, Switch } from 'react-router-dom'; // changed
+//component import
+import SignUp from './components/SignUp'; // new
+import LogIn from './components/LogIn'; // new
 import './App.css';
-import 'react-toastify/dist/ReactToastify.css';
 
+// changed
 function App() {
-  // new
-  const [isLoggedIn, setLoggedIn] = useState(() => { // changed
+  const [isLoggedIn, setLoggedIn] = useState(() => {
     return window.localStorage.getItem('taxi.auth') !== null;
   });
-  // new
-  const logIn = async (username, password) => { // changed
+  const logIn = async (username, password) => {
     const url = `${process.env.REACT_APP_BASE_URL}/api/log_in/`;
     try {
       const response = await axios.post(url, { username, password });
@@ -40,8 +33,9 @@ function App() {
     window.localStorage.removeItem('taxi.auth');
     setLoggedIn(false);
   };
+
   return (
-    <div>
+    <>
       <Navbar bg='light' expand='lg' variant='light'>
         <LinkContainer to='/'>
           <Navbar.Brand className='logo'>Taxi</Navbar.Brand>
@@ -49,21 +43,9 @@ function App() {
         <Navbar.Toggle />
         <Navbar.Collapse>
           {
-            isRider() && (
-              <Nav className='mr-auto'>
-                <LinkContainer to='/rider/request'>
-                  <Nav.Link>Request a trip</Nav.Link>
-                </LinkContainer>
-              </Nav>
-            )
-          }
-          {
             isLoggedIn && (
               <Form inline className='ml-auto'>
-                <Button
-                  type='button'
-                  onClick={() => logOut()}
-                >Log out</Button>
+                <Button type='button' onClick={() => logOut()}>Log out</Button>
               </Form>
             )
           }
@@ -90,22 +72,6 @@ function App() {
                   to='/log-in'
                 >Log in</Link>
               }
-              {
-                isRider() && (
-                  <Link
-                    className='btn btn-primary'
-                    to='/rider'
-                  >Dashboard</Link>
-                )
-              }
-              {
-                isDriver() && (
-                  <Link
-                    className='btn btn-primary'
-                    to='/driver'
-                  >Dashboard</Link>
-                )
-              }
             </div>
           )} />
           <Route path='/sign-up' render={() => (
@@ -123,17 +89,9 @@ function App() {
               )
           )} />
         </Switch>
-        <Route path='/driver' render={() => (
-          <Driver />
-        )} />
-        <Route path='/rider' render={() => (
-          <Rider />
-        )} />
       </Container>
-      <ToastContainer />
-    </div>
+    </>
   );
 }
 
 export default App;
-

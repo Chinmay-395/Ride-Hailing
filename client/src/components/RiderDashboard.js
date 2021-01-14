@@ -2,44 +2,14 @@ import React, { useEffect, useState } from 'react';
 import {
   Breadcrumb, Col, Row
 } from 'react-bootstrap';
-import { webSocket } from 'rxjs/webSocket';
 import { toast } from 'react-toastify';
-
-
+//component import
 import TripCard from './TripCard';
-import { getTrips } from '../services/TripService';
-import { getAccessToken } from '../services/AuthService';
-
+//service import
+import { connect, getTrips, messages } from '../services/TripService';
 
 function Rider(props) {
   const [trips, setTrips] = useState([]);
-
-  useEffect(() => {
-    const loadTrips = async () => {
-      const { response, isError } = await getTrips();
-      if (isError) {
-        setTrips([]);
-      } else {
-        setTrips(response.data);
-      }
-    }
-    loadTrips();
-  }, []);
-
-  useEffect(() => {
-    const token = getAccessToken();
-    const ws = webSocket(`ws://localhost:8003/taxi/?token=${token}`);
-    const subscription = ws.subscribe((message) => {
-      setTrips(prevTrips => [
-        ...prevTrips.filter(trip => trip.id !== message.data.id),
-        message.data
-      ]);
-      updateToast(message.data);
-    });
-    return () => {
-      subscription.unsubscribe();
-    }
-  }, []);
 
   const updateToast = (trip) => {
     if (trip.status === 'STARTED') {
@@ -50,6 +20,50 @@ function Rider(props) {
       toast.info(`Driver ${trip.driver.username} has dropped you off.`);
     }
   };
+
+  useEffect(() => {
+    connect();
+    const subscription = messages.subscribe((message) => {
+      setTrips(prevTrips => [
+        ...prevTrips.filter(trip => trip.id !== message.data.id),
+        message.data
+      ]);
+      updateToast(message.data);
+    });
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    }
+  }, [setTrips]);
+  // useEffect(() => {
+  //   const loadTrips = async () => {
+  //     const { response, isError } = await getTrips();
+  //     if (isError) {
+  //       setTrips([]);
+  //     } else {
+  //       setTrips(response.data);
+  //     }
+  //   }
+  //   loadTrips();
+  // }, []);
+
+  // useEffect(() => {
+  //   const token = getAccessToken();
+  //   const ws = webSocket(`ws://localhost:8003/taxi/?token=${token}`);
+  //   const subscription = ws.subscribe((message) => {
+  //     setTrips(prevTrips => [
+  //       ...prevTrips.filter(trip => trip.id !== message.data.id),
+  //       message.data
+  //     ]);
+  //     updateToast(message.data);
+  //   });
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   }
+  // }, []);
+
+
 
   const getCurrentTrips = () => {
     /* ===========================================================

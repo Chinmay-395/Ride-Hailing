@@ -1,10 +1,12 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-
+//component import
 import RiderDashboard from './RiderDashboard';
 import RiderDetail from './RiderDetail';
-import { isRider } from '../services/AuthService';
 import RiderRequest from './RiderRequest';
+//service import
+import { isRider } from '../services/AuthService';
+
 
 function Rider(props) {
   if (!isRider()) {

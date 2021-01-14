@@ -143,12 +143,10 @@ describe('The rider dashboard', function () {
 
 
   it('Can request a new trip', function () {
-    cy.server();
-    cy.route('GET', '**/api/trip/').as('getTrips');
-
-    // logIn();
+    cy.intercept('trip').as('getTrips');
 
     cy.logIn(riderEmail);
+
     cy.visit('/#/rider/request');
 
     cy.get('[data-cy=pick-up-address]').type('123 Main Street');

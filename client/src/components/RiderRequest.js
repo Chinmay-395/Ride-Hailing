@@ -1,48 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Formik } from 'formik';
 import {
   Breadcrumb, Button, Card, Col, Form, Row
 } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
-import { webSocket } from 'rxjs/webSocket';
 
-import { getAccessToken, getUser } from '../services/AuthService';
+import { getUser } from '../services/AuthService';
 import { createTrip } from '../services/TripService';
-import Map from './Map';
 
 function RiderRequest(props) {
   const [isSubmitted, setSubmitted] = useState(false);
 
   const onSubmit = (values, actions) => {
     const rider = getUser();
-    const token = getAccessToken();
-    const ws = webSocket(`ws://localhost:8003/taxi/?token=${token}`);
-    ws.subscribe();
-    ws.next({
-      type: 'create.trip',
-      data: {
-        pick_up_address: values.pickUpAddress,
-        drop_off_address: values.dropOffAddress,
-        rider: rider.id
-      }
+    createTrip({
+      pick_up_address: values.pickUpAddress,
+      drop_off_address: values.dropOffAddress,
+      rider: rider.id
     });
     setSubmitted(true);
   };
-
-
-  /**Creating the effects for mapsAPI to fill in the details for pickup and dropoff */
-  const [lat, setLat] = useState(38.897957);
-  const [lng, setLng] = useState(-77.036560);
-
-  useEffect(() => {
-    if (window.navigator.geolocation) {
-      window.navigator.geolocation.getCurrentPosition((position) => {
-        setLat(position.coords.latitude);
-        setLng(position.coords.longitude);
-      });
-    }
-  }, []);
 
   if (isSubmitted) {
     return <Redirect to='/rider' />
@@ -84,13 +62,6 @@ function RiderRequest(props) {
                       required
                     />
                   </Form.Group>
-                  <Map
-                    lat={lat}
-                    lng={lng}
-                    zoom={13}
-                    pickUpAddress={values.pickUpAddress}
-                    dropOffAddress={values.dropOffAddress}
-                  />
                   <Form.Group controlId='dropOffAddress'>
                     <Form.Label>Drop off address:</Form.Label>
                     <Form.Control

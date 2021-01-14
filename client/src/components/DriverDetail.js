@@ -3,12 +3,12 @@ import {
   Breadcrumb, Button, Card, Col, Row
 } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap';
-import { webSocket } from 'rxjs/webSocket';
+// import { webSocket } from 'rxjs/webSocket';
 
 
-import { getAccessToken, getUser } from '../services/AuthService';
+import { getUser } from '../services/AuthService';
 import TripMedia from './TripMedia';
-import { getTrip } from '../services/TripService';
+import { getTrip, updateTrip } from '../services/TripService';
 /* ========================================================
   As the React Router documentation states, 
   "a match object contains information about how a <Route path> matched the URL."
@@ -21,6 +21,17 @@ function DriverDetail({ match }) {
    * Whenever the data finishes loading, the component will display the trip information.
    */
   const [trip, setTrip] = useState(null);
+
+  const updateTripStatus = (status) => {
+    const driver = getUser();
+    const updatedTrip = { ...trip, driver, status };
+    updateTrip({
+      ...updatedTrip,
+      driver: updatedTrip.driver.id,
+      rider: updatedTrip.rider.id
+    });
+    setTrip(updatedTrip);
+  };
 
   useEffect(() => {
     const loadTrip = async (id) => {
@@ -46,23 +57,6 @@ function DriverDetail({ match }) {
       />
     )
   }
-
-  const updateTripStatus = (status) => {
-    const driver = getUser();
-    const updatedTrip = { ...trip, driver, status };
-    const token = getAccessToken();
-    const ws = webSocket(`ws://localhost:8003/taxi/?token=${token}`);
-    ws.subscribe();
-    ws.next({
-      type: 'update.trip',
-      data: {
-        ...updatedTrip,
-        driver: updatedTrip.driver.id,
-        rider: updatedTrip.rider.id
-      }
-    });
-    setTrip(updatedTrip);
-  };
 
   return (
     <Row>

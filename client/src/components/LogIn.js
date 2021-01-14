@@ -1,13 +1,15 @@
 import React from 'react';
-import { Alert, Breadcrumb, Card, Col, Button, Form, Row } from 'react-bootstrap';
-import { Formik } from 'formik';
-import { Link, Redirect } from 'react-router-dom';
+import { Formik } from 'formik'; // new
+import {
+  Alert, Breadcrumb, Button, Card, Col, Form, Row
+} from 'react-bootstrap'; // changed
+import { Link } from 'react-router-dom';
 
-function LogIn(props) {
-
+function LogIn({ logIn }) {
+  // const [isSubmitted, setSubmitted] = useState(false);
   const onSubmit = async (values, actions) => {
     try {
-      const { response, isError } = await props.logIn(
+      const { response, isError } = await logIn(
         values.username,
         values.password
       );
@@ -22,7 +24,6 @@ function LogIn(props) {
       console.error(error);
     }
   }
-
 
   return (
     <Row>
@@ -48,35 +49,35 @@ function LogIn(props) {
                 isSubmitting,
                 values
               }) => (
-                  <>
-                    {
-                      '__all__' in errors &&
-                      <Alert variant='danger'>
-                        {errors['__all__']}
-                      </Alert>
-                    }
-                    <Form noValidate onSubmit={handleSubmit}>
-                      <Form.Group controlId='username'>
-                        <Form.Label>Username:</Form.Label>
-                        <Form.Control
-                          name='username'
-                          onChange={handleChange}
-                          value={values.username}
-                        />
-                      </Form.Group>
-                      <Form.Group controlId='password'>
-                        <Form.Label>Password:</Form.Label>
-                        <Form.Control
-                          name='password'
-                          onChange={handleChange}
-                          type='password'
-                          value={values.password}
-                        />
-                      </Form.Group>
-                      <Button block type='submit' variant='primary'>Log in</Button>
-                    </Form>
-                  </>
-                )}
+                <>
+                  {
+                    '__all__' in errors &&
+                    <Alert variant='danger'>
+                      {errors['__all__']}
+                    </Alert>
+                  }
+                  <Form noValidate onSubmit={handleSubmit}>
+                    <Form.Group controlId='username'>
+                      <Form.Label>Username:</Form.Label>
+                      <Form.Control
+                        name='username'
+                        onChange={handleChange}
+                        value={values.username}
+                      />
+                    </Form.Group>
+                    <Form.Group controlId='password'>
+                      <Form.Label>Password:</Form.Label>
+                      <Form.Control
+                        name='password'
+                        onChange={handleChange}
+                        type='password'
+                        value={values.password}
+                      />
+                    </Form.Group>
+                    <Button block type='submit' variant='primary'>Log in</Button>
+                  </Form>
+                </>
+              )}
             </Formik>
           </Card.Body>
           <p className='mt-3 text-center'>
@@ -84,7 +85,7 @@ function LogIn(props) {
           </p>
         </Card>
       </Col>
-    </Row>
+    </Row >
   );
 }
 

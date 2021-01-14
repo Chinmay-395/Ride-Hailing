@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Breadcrumb, Card, Col, Button, Form, Row } from 'react-bootstrap';
 import { Formik } from 'formik';
-import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
+import { Link, Redirect } from 'react-router-dom';
+import { Breadcrumb, Button, Card, Col, Form, Row } from 'react-bootstrap';
+
 function SignUp(props) {
   const [isSubmitted, setSubmitted] = useState(false);
 
@@ -23,6 +24,7 @@ function SignUp(props) {
     catch (response) {
       const data = response.response.data;
       for (const value in data) {
+        console.log("THE ERROR log", value)
         actions.setFieldError(value, data[value].join(' '));
       }
     }
@@ -60,96 +62,95 @@ function SignUp(props) {
                 setFieldValue,
                 values
               }) => (
-                  <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId='username'>
-                      <Form.Label>Username:</Form.Label>
-                      <Form.Control
-                        className={'username' in errors ? 'is-invalid' : ''}
-                        name='username'
-                        onChange={handleChange}
-                        values={values.username}
-                        required
-                      />
-                      {
-                        'username' in errors &&
-                        <Form.Control.Feedback type='invalid'>{errors.username}</Form.Control.Feedback>
-                      }
-                    </Form.Group>
-                    <Form.Group controlId='firstName'>
-                      <Form.Label>First name:</Form.Label>
-                      <Form.Control
-                        className={'firstName' in errors ? 'is-invalid' : ''}
-                        name='firstName'
-                        onChange={handleChange}
-                        values={values.firstName}
-                      />
-                      {
-                        'firstName' in errors &&
-                        <Form.Control.Feedback type='invalid'>{errors.firstName}</Form.Control.Feedback>
-                      }
-                    </Form.Group>
-                    <Form.Group controlId='lastName'>
-                      <Form.Label>Last name:</Form.Label>
-                      <Form.Control
-                        className={'lastName' in errors ? 'is-invalid' : ''}
-                        name='lastName'
-                        onChange={handleChange}
-                        values={values.lastName}
-                      />
-                      {
-                        'lastName' in errors &&
-                        <Form.Control.Feedback type='invalid'>{errors.lastName}</Form.Control.Feedback>
-                      }
-                    </Form.Group>
-                    <Form.Group controlId='password'>
-                      <Form.Label>Password:</Form.Label>
-                      <Form.Control
-                        className={'password' in errors ? 'is-invalid' : ''}
-                        name='password'
-                        onChange={handleChange}
-                        type='password'
-                        value={values.password}
-                      />
-                      {
-                        'password' in errors &&
-                        <Form.Control.Feedback type='invalid'>{errors.password}</Form.Control.Feedback>
-                      }
-                    </Form.Group>
-                    <Form.Group controlId='group'>
-                      <Form.Label>Group:</Form.Label>
-                      <Form.Control
-                        as='select'
-                        className={'group' in errors ? 'is-invalid' : ''}
-                        name='group'
-                        onChange={handleChange}
-                        value={values.group}
-                      >
-                        <option value='rider'>Rider</option>
-                        <option value='driver'>Driver</option>
-                      </Form.Control>
-                      {
-                        'group' in errors &&
-                        <Form.Control.Feedback type='invalid'>{errors.group}</Form.Control.Feedback>
-                      }
-                    </Form.Group>
-                    <Form.Group controlId='photo'>
-                      <Form.Label>Photo:</Form.Label>
-                      <Form.Control
-                        className={'photo' in errors ? 'is-invalid' : ''}
-                        name='photo'
-                        onChange={event => {
-                          setFieldValue('photo', event.currentTarget.files[0]);
-                        }}
-                        type='file'
-                      />
-                      {
-                        'photo' in errors &&
-                        <Form.Control.Feedback type='invalid'>{errors.photo}</Form.Control.Feedback>
-                      }
-                    </Form.Group>
-                    <Button block type='submit' variant='primary'>Sign up</Button>
-                  </Form>
-                )}
+                <Form noValidate onSubmit={handleSubmit}>
+                  <Form.Group controlId='username'>
+                    <Form.Label>Username:</Form.Label>
+                    <Form.Control
+                      className={'username' in errors ? 'is-invalid' : ''}
+                      name='username'
+                      onChange={handleChange}
+                      values={values.username}
+                    />
+                    {
+                      'username' in errors &&
+                      <Form.Control.Feedback type='invalid'>{errors.username}</Form.Control.Feedback>
+                    }
+                  </Form.Group>
+                  <Form.Group controlId='firstName'>
+                    <Form.Label>First name:</Form.Label>
+                    <Form.Control
+                      className={'firstName' in errors ? 'is-invalid' : ''}
+                      name='firstName'
+                      onChange={handleChange}
+                      values={values.firstName}
+                    />
+                    {
+                      'firstName' in errors &&
+                      <Form.Control.Feedback type='invalid'>{errors.firstName}</Form.Control.Feedback>
+                    }
+                  </Form.Group>
+                  <Form.Group controlId='lastName'>
+                    <Form.Label>Last name:</Form.Label>
+                    <Form.Control
+                      className={'lastName' in errors ? 'is-invalid' : ''}
+                      name='lastName'
+                      onChange={handleChange}
+                      values={values.lastName}
+                    />
+                    {
+                      'lastName' in errors &&
+                      <Form.Control.Feedback type='invalid'>{errors.lastName}</Form.Control.Feedback>
+                    }
+                  </Form.Group>
+                  <Form.Group controlId='password'>
+                    <Form.Label>Password:</Form.Label>
+                    <Form.Control
+                      className={'password' in errors ? 'is-invalid' : ''}
+                      name='password'
+                      onChange={handleChange}
+                      type='password'
+                      value={values.password}
+                    />
+                    {
+                      'password' in errors &&
+                      <Form.Control.Feedback type='invalid'>{errors.password}</Form.Control.Feedback>
+                    }
+                  </Form.Group>
+                  <Form.Group controlId='group'>
+                    <Form.Label>Group:</Form.Label>
+                    <Form.Control
+                      as='select'
+                      className={'group' in errors ? 'is-invalid' : ''}
+                      name='group'
+                      onChange={handleChange}
+                      value={values.group}
+                    >
+                      <option value='rider'>Rider</option>
+                      <option value='driver'>Driver</option>
+                    </Form.Control>
+                    {
+                      'group' in errors &&
+                      <Form.Control.Feedback type='invalid'>{errors.group}</Form.Control.Feedback>
+                    }
+                  </Form.Group>
+                  <Form.Group controlId='photo'>
+                    <Form.Label>Photo:</Form.Label>
+                    <Form.Control
+                      className={'photo' in errors ? 'is-invalid' : ''}
+                      name='photo'
+                      onChange={event => {
+                        setFieldValue('photo', event.currentTarget.files[0]);
+                      }}
+                      type='file'
+                    />
+                    {
+                      'photo' in errors &&
+                      <Form.Control.Feedback type='invalid'>{errors.photo}</Form.Control.Feedback>
+                    }
+                  </Form.Group>
+                  <Button block type='submit' variant='primary'>Sign up</Button>
+                </Form>
+              )}
             </Formik>
           </Card.Body>
           <p className='mt-3 text-center'>

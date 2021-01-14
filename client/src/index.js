@@ -1,17 +1,15 @@
+import 'bootswatch/dist/lumen/bootstrap.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter } from 'react-router-dom';
-import 'bootswatch/dist/lumen/bootstrap.css';
+import { HashRouter } from 'react-router-dom'; // new
 import axios from 'axios';
-
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.xsrfHeaderName = 'X-CSRFToken';
-
+axios.defaults.xsrfCookieName = 'csrftoken'; // new
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'; // new
+// changed
 ReactDOM.render(
   <React.StrictMode>
     <HashRouter>

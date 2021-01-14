@@ -24,3 +24,13 @@ export PGPASSWORD=taxi
 
 ### For Admin purpose
     • chinmay_dali || test@1234 
+
+### this was formated in package.json
+```
+"eslintConfig": {
+    "extends": [
+        "react-app/jest",
+    ]
+},
+```
+  
