@@ -3,12 +3,11 @@ import {
   Breadcrumb, Col, Row
 } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-//component import
+
 import TripCard from './TripCard';
-//service import
 import { connect, getTrips, messages } from '../services/TripService';
 
-function Rider(props) {
+function RiderDashboard(props) {
   const [trips, setTrips] = useState([]);
 
   const updateToast = (trip) => {
@@ -21,6 +20,25 @@ function Rider(props) {
     }
   };
 
+  useEffect(() => {
+    const loadTrips = async () => {
+      const { response, isError } = await getTrips();
+      if (isError) {
+        setTrips([]);
+      } else {
+        setTrips(response.data);
+      }
+    }
+    loadTrips();
+  }, []);
+
+  /**[Socket connection]
+   * We leverage the useEffect() hook to establish a WebSocket connection
+   * with the server and subscribe to all incoming messages. 
+   * Whenever our app receives a message, it updates the trips 
+   * state to reflect the changes. We need to import the connect() function 
+   * and the messages observable add the top of the file
+   * for our client code to compile. */
   useEffect(() => {
     connect();
     const subscription = messages.subscribe((message) => {
@@ -36,42 +54,8 @@ function Rider(props) {
       }
     }
   }, [setTrips]);
-  // useEffect(() => {
-  //   const loadTrips = async () => {
-  //     const { response, isError } = await getTrips();
-  //     if (isError) {
-  //       setTrips([]);
-  //     } else {
-  //       setTrips(response.data);
-  //     }
-  //   }
-  //   loadTrips();
-  // }, []);
-
-  // useEffect(() => {
-  //   const token = getAccessToken();
-  //   const ws = webSocket(`ws://localhost:8003/taxi/?token=${token}`);
-  //   const subscription = ws.subscribe((message) => {
-  //     setTrips(prevTrips => [
-  //       ...prevTrips.filter(trip => trip.id !== message.data.id),
-  //       message.data
-  //     ]);
-  //     updateToast(message.data);
-  //   });
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   }
-  // }, []);
-
-
 
   const getCurrentTrips = () => {
-    /* ===========================================================
-        These functions filter the trips so that we can put them in
-        the right buckets. Current trips are any trips that have been
-        requested but not started yet. A trip that does not have a driver
-        and is not completed is considered a current trip.
-    =========================================================== */
     return trips.filter(trip => {
       return (
         trip.driver !== null &&
@@ -87,7 +71,6 @@ function Rider(props) {
     });
   };
 
-
   return (
     <Row>
       <Col lg={12}>
@@ -95,27 +78,24 @@ function Rider(props) {
           <Breadcrumb.Item href='/'>Home</Breadcrumb.Item>
           <Breadcrumb.Item active>Dashboard</Breadcrumb.Item>
         </Breadcrumb>
-        {/* ======================================================
-            The current trip would be displayed in a bootstrap card
-        ======================================================*/}
+
         <TripCard
           title='Current Trip'
           trips={getCurrentTrips()}
           group='rider'
           otherGroup='driver'
         />
-        {/* ======================================================
-            The recent trips would be displayed in a bootstrap card
-        ======================================================*/}
+
         <TripCard
           title='Recent Trips'
           trips={getCompletedTrips()}
           group='rider'
           otherGroup='driver'
         />
+
       </Col>
     </Row>
   );
 }
 
-export default Rider;
+export default RiderDashboard;

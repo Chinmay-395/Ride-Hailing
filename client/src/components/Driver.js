@@ -1,17 +1,14 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-
-import DriverDashboard from './DriverDashboard';
-import DriverDetail from './DriverDetail';
+//components
 import { isDriver } from '../services/AuthService';
-
+import DriverDashboard from './DriverDashboard'; // new
+import DriverDetail from './DriverDetail'; // new
 
 function Driver(props) {
-
   if (!isDriver()) {
     return <Redirect to='/' />
   }
-
 
   return (
     <Switch>

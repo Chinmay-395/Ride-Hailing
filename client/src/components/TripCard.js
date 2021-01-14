@@ -1,15 +1,12 @@
+/**[Note]
+ * Using data-* attributes instead of id or class attributes
+ * to select HTML elements is a Cypress best practice. */
 import React from 'react';
 import { Card } from 'react-bootstrap';
 
 import TripMedia from './TripMedia';
 
 function TripCard({ title, trips, group, otherGroup }) {
-  /** ========================================================================
-    The TripCard component will draw a Bootstrap Card using the properties
-    supplied by the caller. If the provided trips are empty, then the component
-    will display a "No trips" message. If trips exist, then the component will
-    display a list of Media components.
-  ======================================================================== */
   let cardBody;
   let mediaList;
 

@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Button, Container, Form, Navbar } from 'react-bootstrap'; // new
+import { Button, Container, Form, Navbar, Nav } from 'react-bootstrap'; // new
 import { LinkContainer } from 'react-router-bootstrap'; // new
 import { Link, Redirect, Route, Switch } from 'react-router-dom'; // changed
+import { ToastContainer } from 'react-toastify';
 //component import
 import SignUp from './components/SignUp'; // new
 import LogIn from './components/LogIn'; // new
+import Driver from './components/Driver.js';
+import Rider from './components/Rider.js';
+import { isDriver, isRider } from './services/AuthService';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
 // changed
@@ -43,9 +48,21 @@ function App() {
         <Navbar.Toggle />
         <Navbar.Collapse>
           {
+            isRider() && (
+              <Nav className='mr-auto'>
+                <LinkContainer to='/rider/request'>
+                  <Nav.Link>Request a trip</Nav.Link>
+                </LinkContainer>
+              </Nav>
+            )
+          }
+          {
             isLoggedIn && (
               <Form inline className='ml-auto'>
-                <Button type='button' onClick={() => logOut()}>Log out</Button>
+                <Button
+                  type='button'
+                  onClick={() => logOut()}
+                >Log out</Button>
               </Form>
             )
           }
@@ -58,20 +75,36 @@ function App() {
               <h1 className='landing logo'>Taxi</h1>
               {
                 !isLoggedIn &&
-                <Link
-                  id='signUp'
-                  className='btn btn-primary'
-                  to='/sign-up'
-                >Sign up</Link>
+                <>
+                  <Link
+                    id='signUp'
+                    className='btn btn-primary'
+                    to='/sign-up'
+                  >Sign up</Link>
+                  <Link
+                    id='logIn'
+                    className='btn btn-primary'
+                    to='/log-in'
+                  >Log in</Link>
+                </>
               }
               {
-                !isLoggedIn &&
-                <Link
-                  id='logIn'
-                  className='btn btn-primary'
-                  to='/log-in'
-                >Log in</Link>
+                isRider() && (
+                  <Link
+                    className='btn btn-primary'
+                    to='/rider'
+                  >Rider Dashboard</Link>
+                )
               }
+              {
+                isDriver() && (
+                  <Link
+                    className='btn btn-primary'
+                    to='/driver'
+                  >Driver Dashboard</Link>
+                )
+              }
+              <ToastContainer />
             </div>
           )} />
           <Route path='/sign-up' render={() => (
@@ -87,6 +120,14 @@ function App() {
             ) : (
                 <LogIn logIn={logIn} />
               )
+          )} />
+          {/* The driver related components */}
+          <Route path='/driver' render={() => (
+            <Driver />
+          )} />
+          {/* The rider related compoenents */}
+          <Route path='/rider' render={() => (
+            <Rider />
           )} />
         </Switch>
       </Container>

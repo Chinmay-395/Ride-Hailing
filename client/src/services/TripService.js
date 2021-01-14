@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { share } from 'rxjs/operators'; // new
 import { webSocket } from 'rxjs/webSocket'; // new
-
 import { getAccessToken } from './AuthService';
 
 let _socket; // new
 export let messages; // new
+
 
 // new
 export const connect = () => {
@@ -36,7 +36,6 @@ export const updateTrip = (trip) => {
   _socket.next(message);
 };
 
-//This is "TripDetail" 
 export const getTrip = async (id) => {
   const url = `${process.env.REACT_APP_BASE_URL}/api/trip/${id}/`;
   const token = getAccessToken();
@@ -48,7 +47,7 @@ export const getTrip = async (id) => {
     return { response, isError: true };
   }
 };
-//This is "TripList" 
+
 export const getTrips = async () => {
   const url = `${process.env.REACT_APP_BASE_URL}/api/trip/`;
   const token = getAccessToken();

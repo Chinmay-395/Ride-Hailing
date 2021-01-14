@@ -3,35 +3,17 @@ import {
   Breadcrumb, Button, Card, Col, Row
 } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap';
-// import { webSocket } from 'rxjs/webSocket';
 
-
-import { getUser } from '../services/AuthService';
 import TripMedia from './TripMedia';
-import { getTrip, updateTrip } from '../services/TripService';
-/* ========================================================
-  As the React Router documentation states, 
-  "a match object contains information about how a <Route path> matched the URL."
- ======================================================== */
+import { getUser } from '../services/AuthService'; // new
+import { getTrip, updateTrip } from '../services/TripService'; // changed
+/**
+ * DriverDetail component expects a match property to be passed to it. 
+ * As the React Router documentation states, "a match object contains information
+ * about how a <Route path> matched the URL."
+ */
 function DriverDetail({ match }) {
-  /**
-   * When a user clicks on a trip card from the dashboard, it will link to 
-   * the detail via the trip's ID. The useEffect() hook listens for changes 
-   * to the match object and loads the data for the given trip into the component. 
-   * Whenever the data finishes loading, the component will display the trip information.
-   */
   const [trip, setTrip] = useState(null);
-
-  const updateTripStatus = (status) => {
-    const driver = getUser();
-    const updatedTrip = { ...trip, driver, status };
-    updateTrip({
-      ...updatedTrip,
-      driver: updatedTrip.driver.id,
-      rider: updatedTrip.rider.id
-    });
-    setTrip(updatedTrip);
-  };
 
   useEffect(() => {
     const loadTrip = async (id) => {
@@ -57,6 +39,17 @@ function DriverDetail({ match }) {
       />
     )
   }
+
+  const updateTripStatus = (status) => {
+    const driver = getUser();
+    const updatedTrip = { ...trip, driver, status };
+    updateTrip({
+      ...updatedTrip,
+      driver: updatedTrip.driver.id,
+      rider: updatedTrip.rider.id
+    });
+    setTrip(updatedTrip);
+  };
 
   return (
     <Row>

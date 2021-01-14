@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react';
 import {
   Breadcrumb, Col, Row
 } from 'react-bootstrap';
-// import { webSocket } from 'rxjs/webSocket';
 import { toast } from 'react-toastify';
-import { connect, getTrips, messages } from '../services/TripService';
-
-
-// import { getAccessToken } from '../services/AuthService';
+//components
 import TripCard from './TripCard';
+//service
+import { connect, getTrips, messages } from '../services/TripService';
 
 
 function DriverDashboard(props) {
@@ -19,7 +17,20 @@ function DriverDashboard(props) {
       toast.info(`Rider ${trip.rider.username} has requested a trip.`);
     }
   };
-
+  //This will load the trips
+  useEffect(() => {
+    const loadTrips = async () => {
+      const { response, isError } = await getTrips();
+      if (isError) {
+        setTrips([]);
+      } else {
+        setTrips(response.data);
+      }
+    }
+    loadTrips();
+  }, []);
+  //This will connect websocket on frontend with backend
+  //this will only run setTrips array in the local-state is loaded with trips
   useEffect(() => {
     connect();
     const subscription = messages.subscribe((message) => {
@@ -35,35 +46,6 @@ function DriverDashboard(props) {
       }
     }
   }, [setTrips]);
-  // useEffect(() => {
-  //   const loadTrips = async () => {
-  //     const { response, isError } = await getTrips();
-  //     if (isError) {
-  //       setTrips([]);
-  //     } else {
-  //       setTrips(response.data);
-  //     }
-  //   }
-  //   loadTrips();
-  // }, []);
-
-  // useEffect(() => {
-  //   const token = getAccessToken();
-  //   const ws = webSocket(`ws://localhost:8003/taxi/?token=${token}`);
-  //   const subscription = ws.subscribe((message) => {
-  //     setTrips(prevTrips => [
-  //       ...prevTrips.filter(trip => trip.id !== message.data.id),
-  //       message.data
-  //     ]);
-  //     updateToast(message.data);
-  //   });
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   }
-  // }, []);
-
-
-
 
   const getCurrentTrips = () => {
     return trips.filter(trip => {
@@ -91,27 +73,20 @@ function DriverDashboard(props) {
           <Breadcrumb.Item active>Dashboard</Breadcrumb.Item>
         </Breadcrumb>
 
-        {/* ======================================================
-            The current trip would be displayed in a bootstrap card
-        ======================================================*/}
         <TripCard
           title='Current Trip'
           trips={getCurrentTrips()}
           group='driver'
           otherGroup='rider'
         />
-        {/* ======================================================
-            The requested trips would be displayed in a bootstrap card
-        ======================================================*/}
+
         <TripCard
           title='Requested Trips'
           trips={getRequestedTrips()}
           group='driver'
           otherGroup='rider'
         />
-        {/* ======================================================
-            The recent trips would be displayed in a bootstrap card
-        ======================================================*/}
+
         <TripCard
           title='Recent Trips'
           trips={getCompletedTrips()}
