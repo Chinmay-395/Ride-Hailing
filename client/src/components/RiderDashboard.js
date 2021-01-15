@@ -10,16 +10,6 @@ import { connect, getTrips, messages } from '../services/TripService';
 function RiderDashboard(props) {
   const [trips, setTrips] = useState([]);
 
-  const updateToast = (trip) => {
-    if (trip.status === 'STARTED') {
-      toast.info(`Driver ${trip.driver.username} is coming to pick you up.`);
-    } else if (trip.status === 'IN_PROGRESS') {
-      toast.info(`Driver ${trip.driver.username} is headed to your destination.`);
-    } else if (trip.status === 'COMPLETED') {
-      toast.info(`Driver ${trip.driver.username} has dropped you off.`);
-    }
-  };
-
   useEffect(() => {
     const loadTrips = async () => {
       const { response, isError } = await getTrips();
@@ -69,6 +59,18 @@ function RiderDashboard(props) {
     return trips.filter(trip => {
       return trip.status === 'COMPLETED';
     });
+  };
+
+  const updateToast = (trip) => {
+    console.log("THE UPDATE FUNCTION RAN", trip)
+    console.log("THE STATUS UPDATE \n", trip.status)
+    if (trip.status === 'STARTED') {
+      toast.info(`Driver ${trip.driver.username} is coming to pick you up.`);
+    } else if (trip.status === 'IN_PROGRESS') {
+      toast.info(`Driver ${trip.driver.username} is headed to your destination.`);
+    } else if (trip.status === 'COMPLETED') {
+      toast.info(`Driver ${trip.driver.username} has dropped you off.`);
+    }
   };
 
   return (

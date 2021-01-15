@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Button, Container, Form, Navbar, Nav } from 'react-bootstrap'; // new
-import { LinkContainer } from 'react-router-bootstrap'; // new
-import { Link, Redirect, Route, Switch } from 'react-router-dom'; // changed
+import { Button, Container, Form, Navbar, Nav } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import { Link, Redirect, Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 //component import
-import SignUp from './components/SignUp'; // new
-import LogIn from './components/LogIn'; // new
+import SignUp from './components/SignUp';
+import LogIn from './components/LogIn';
 import Driver from './components/Driver.js';
 import Rider from './components/Rider.js';
+//service import
 import { isDriver, isRider } from './services/AuthService';
+//css imports
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
@@ -104,7 +106,6 @@ function App() {
                   >Driver Dashboard</Link>
                 )
               }
-              <ToastContainer />
             </div>
           )} />
           <Route path='/sign-up' render={() => (
@@ -131,6 +132,7 @@ function App() {
           )} />
         </Switch>
       </Container>
+      <ToastContainer />
     </>
   );
 }

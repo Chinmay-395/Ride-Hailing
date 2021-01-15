@@ -12,11 +12,6 @@ import { connect, getTrips, messages } from '../services/TripService';
 function DriverDashboard(props) {
   const [trips, setTrips] = useState([]);
 
-  const updateToast = (trip) => {
-    if (trip.driver === null) {
-      toast.info(`Rider ${trip.rider.username} has requested a trip.`);
-    }
-  };
   //This will load the trips
   useEffect(() => {
     const loadTrips = async () => {
@@ -47,6 +42,8 @@ function DriverDashboard(props) {
     }
   }, [setTrips]);
 
+
+
   const getCurrentTrips = () => {
     return trips.filter(trip => {
       return trip.driver !== null && trip.status !== 'COMPLETED';
@@ -64,6 +61,14 @@ function DriverDashboard(props) {
       return trip.status === 'COMPLETED';
     });
   }
+
+  const updateToast = (trip) => {
+    console.log("THE UPDATE TRip", trip)
+    if (trip.driver === null) {
+      console.log("IS IT WORKING", trip.rider.username)
+      toast.info(`Rider ${trip.rider.username} has requested a trip.`);
+    }
+  };
 
   return (
     <Row>
