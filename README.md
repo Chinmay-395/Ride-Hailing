@@ -1,3 +1,17 @@
+# Initiating my PRODUCTION BUILD NOW
+
+#Login Info
+user-1:
+rider
+kaiHavertz@chelsea.com
+test
+user-2:
+driver
+christianPulisic@chelsea
+test
+
+# Just simply run the App in Docker
+open the docker dashboard and click run on the taxi-app
 # All the elemental libraries and frameworks used in this
     • Frontend
         ○ ReactJS
