@@ -10,17 +10,28 @@ https://user-images.githubusercontent.com/40957575/174254229-a7793397-76d1-442b-
 
 # All the elemental libraries and frameworks used in this
 
-    • Frontend
-        ○ ReactJS
-        ○ RxJS
-        ○ Cypress
-    • Backend
-        ○ Django
-        ○ Django JWT
-        ○ Django Rest framework
-        ○ Django Channels
-        ○ Pytest framework
-        ○ AsyncIO python Library
++ Back-end
+    - Python
+    - Django
+    - Django REST Framework
+    - Django Channels
+    - Postgres
+    - Redis
+    - JSON Web Tokens (JWTs)
+    - pytest
+
++ Front-end
+    - JavaScript
+    - React
+    - React Hooks
+    - Formik
+    - Cypress
+    - WebSockets
+    - Geolocation
+
++ Tools
+    - Docker
+    - Google Maps
 
 # Initiating my PRODUCTION BUILD NOW
 
