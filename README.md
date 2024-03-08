@@ -1,4 +1,4 @@
-# Uber Clone
+# Ride Pulse (Uber Clone)
 
 ## Demo
 
